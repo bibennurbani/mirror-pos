@@ -6,12 +6,12 @@ export default defineConfig({
   base: './',
   plugins: [
     react(),
-    
+
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        // Fill in with details relevant to your app
+        //Fill in with details relevant to your app
         name: 'Budgeting App',
         short_name: 'BudgetApp',
         description: 'A comprehensive budget management application',
