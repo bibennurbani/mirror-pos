@@ -1,30 +1,24 @@
 // src/components/IncomeSection.tsx
-import React, { useState } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { StoreContext } from '../stores/StoreContext';
 
-interface IncomeItem {
-  description: string;
-  amount: number;
-}
+const IncomeSection: React.FC = observer(() => {
+  const { budgetStore } = useContext(StoreContext);
 
-const IncomeSection: React.FC = () => {
-  const [incomeItems, setIncomeItems] = useState<IncomeItem[]>([]);
-
-  const addIncomeItem = (item: IncomeItem) => {
-    setIncomeItems([...incomeItems, item]);
-  };
+  useEffect(() => {
+    budgetStore.fetchIncomes(); // Fetch incomes from Supabase when the component mounts
+  }, [budgetStore]);
 
   return (
     <div>
       <h2>Income Section</h2>
-      {incomeItems.map((item, index) => (
-        <div key={index}>{item.description}: {item.amount}</div>
+      {budgetStore.incomes.map((income, index) => (
+        <div key={index}>{income.description}: {income.amount}</div>
       ))}
-      {/* Add form to input new income item */}
-      <button onClick={()=> addIncomeItem({amount:1,description:"test"})}>
-
-      </button>
+      {/* UI to add new income item */}
     </div>
   );
-};
+});
 
 export default IncomeSection;

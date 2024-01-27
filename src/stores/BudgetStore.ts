@@ -1,5 +1,6 @@
 // src/stores/BudgetStore.ts
 import { makeAutoObservable } from 'mobx';
+import { supabase } from '../supabaseClient';
 
 interface Income {
   id: number;
@@ -21,8 +22,15 @@ class BudgetStore {
 
   // Async actions can interact with Supabase
   async fetchIncomes() {
-    // Supabase call to fetch incomes
+    const { data, error } = await supabase
+      .from('incomes')
+      .select('*');
+    if (error) {
+      console.error('Error fetching incomes', error);
+    } else {
+      this.incomes = data;
+    }
   }
 }
 
-export default new BudgetStore();
+export default BudgetStore;
