@@ -4,11 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
+    "prod": "vite preview --mode production",
     "build:dev": "tsc && vite build --mode development",
+    "build:prod": "tsc && vite build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "serve:dev": "serve -s dist -l 4000"
+    "serve:dev": "serve -s dist -l 3100",
+    "serve:prod": "serve -s dist -l 3200"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",

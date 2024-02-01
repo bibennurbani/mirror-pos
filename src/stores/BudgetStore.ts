@@ -1,6 +1,6 @@
 // src/stores/BudgetStore.ts
 import { makeAutoObservable } from 'mobx';
-import { supabase } from '../supabaseClient';
+import supabase from '../supabaseClient';
 
 interface Income {
   id: number;
