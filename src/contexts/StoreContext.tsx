@@ -1,18 +1,17 @@
-// src/stores/StoreContext.tsx
-import React from 'react';
-import BudgetStore from './BudgetStore';
+import React from "react";
+import { RootStore } from "../stores/RootStore";
 
 interface StoreContextValue {
-  budgetStore: BudgetStore;
+  rootStore: RootStore;
 }
 
 export const StoreContext = React.createContext<StoreContextValue>({} as StoreContextValue);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const budgetStore = new BudgetStore();
+  const rootStore = React.useMemo(() => new RootStore({}), []);
 
   return (
-    <StoreContext.Provider value={{ budgetStore }}>
+    <StoreContext.Provider value={{ rootStore }}>
       {children}
     </StoreContext.Provider>
   );

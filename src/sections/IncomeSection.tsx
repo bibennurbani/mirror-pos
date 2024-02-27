@@ -1,7 +1,7 @@
 // src/components/IncomeSection.tsx
 import React, { useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { StoreContext } from '../stores/StoreContext';
+import { StoreContext } from '../contexts/StoreContext';
 
 const IncomeSection: React.FC = observer(() => {
   const { budgetStore } = useContext(StoreContext);
