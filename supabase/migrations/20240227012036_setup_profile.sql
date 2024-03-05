@@ -5,6 +5,7 @@ create table profiles (
   username text unique,
   first_name text,
   last_name text,
+  full_name text,
   avatar_url text,
   website text,
 

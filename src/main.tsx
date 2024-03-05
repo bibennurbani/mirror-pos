@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { StoreProvider } from "./contexts/StoreContext.tsx";
 import { SupabaseAuthProvider } from "./contexts/auth/supabaseContext.tsx";
+import RouteProvider from "./contexts/RouteProvider.tsx";
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -23,7 +24,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <StoreProvider>
       <SupabaseAuthProvider>
-        <App />
+        <RouteProvider>
+          <App />
+        </RouteProvider>
       </SupabaseAuthProvider>
     </StoreProvider>
   </React.StrictMode>

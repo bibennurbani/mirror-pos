@@ -1,14 +1,25 @@
-import { model, Model, prop } from "mobx-keystone";
+import { model, Model, prop, registerRootStore } from "mobx-keystone";
 import { SupabaseClientStore } from "./SupabaseClientStore";
-// Import other stores
+import { AppStore } from "./AppStore";
+import { ApiStore } from "./ApiStore";
 
 @model("budgetapp/RootStore")
 export class RootStore extends Model({
-  // Define the SupabaseClientStore as a property with an initializer function
-  // This automatically instantiates SupabaseClientStore when RootStore is instantiated
-  supabaseClient: prop(() => new SupabaseClientStore({})),
-  // Define other stores as properties here, using prop(() => new OtherStore()) if necessary
+  supabaseClient: prop<SupabaseClientStore>(),
+  app: prop<AppStore | undefined>(),
+  api: prop<ApiStore | undefined>(),
 }) {
-  // No need for a constructor to manually instantiate and assign stores
-  // unless you have specific initialization logic that can't be handled in the property definition
+  constructor() {
+    super({
+      supabaseClient: new SupabaseClientStore({}),
+      app: undefined,
+      api: undefined
+    });
+
+    this.supabaseClient = new SupabaseClientStore({});
+    this.app = new AppStore(this); // Pass RootStore reference
+    this.api = new ApiStore(this); // Pass RootStore reference
+
+    registerRootStore(this);
+  }
 }

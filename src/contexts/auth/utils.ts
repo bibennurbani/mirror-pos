@@ -21,7 +21,7 @@ function jwtDecode(token: string) {
 
 // ----------------------------------------------------------------------
 
-export const isValidToken = (accessToken) => {
+export const isValidToken = (accessToken: string) => {
   if (!accessToken) {
     return false;
   }

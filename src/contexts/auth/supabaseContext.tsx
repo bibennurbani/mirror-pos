@@ -1,16 +1,18 @@
 import React, { createContext, useEffect, ReactNode } from "react";
-import { useObserver } from "mobx-react-lite"; // For observing MobX state changes
+import { observer } from "mobx-react-lite"; // For observing MobX state changes
 import { useStore } from "../../hooks/useStore";
 import { User } from "@supabase/supabase-js";
+import { SupabaseClientStore } from "../../stores/SupabaseClientStore";
 
 interface AuthContextType {
   user: User | null;
+  supabase: SupabaseClientStore;
   // Include any additional methods or properties you want to expose through the context
 }
 
 export const SupabaseAuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = observer(({ children }) => {
   const {
     rootStore: { supabaseClient },
   } = useStore();
@@ -29,9 +31,9 @@ export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = ({ childr
   }, [supabaseClient, supabaseClient.user]);
 
   // Use useObserver to make sure React component reacts to MobX state changes
-  return useObserver(() => (
-    <SupabaseAuthContext.Provider value={{ user: supabaseClient.user }}>
+  return (
+    <SupabaseAuthContext.Provider value={{ user: supabaseClient.user, supabase: supabaseClient }}>
       {children}
     </SupabaseAuthContext.Provider>
-  ));
-};
+  );
+});

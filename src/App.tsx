@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from './hooks/useAuth';
+import './App.css'
 
 const App: React.FC = () => {
   const { user } = useAuth();
