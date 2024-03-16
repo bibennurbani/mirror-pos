@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, ReactNode } from "react";
+import React, { createContext, useEffect, ReactNode, useState } from "react";
 import { observer } from "mobx-react-lite"; // For observing MobX state changes
 import { useStore } from "../../hooks/useStore";
 import { User } from "@supabase/supabase-js";
@@ -6,34 +6,38 @@ import { SupabaseClientStore } from "../../stores/SupabaseClientStore";
 
 interface AuthContextType {
   user: User | null;
-  supabase: SupabaseClientStore;
+  client: SupabaseClientStore;
+  isLoadingAuth: boolean
   // Include any additional methods or properties you want to expose through the context
 }
 
-export const SupabaseAuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const SupabaseAuthContext = createContext({} as AuthContextType);
 
-export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = observer(({ children }) => {
-  const {
-    rootStore: { supabaseClient },
-  } = useStore();
+export const SupabaseAuthProvider: React.FC<{ children: ReactNode }> = observer(
+  ({ children }) => {
+    const { supabaseClient } = useStore().rootStore;
+    const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
-  useEffect(() => {
-    // Initial check for an existing session and user
-    supabaseClient.getSession();
+    useEffect(() => {
+      supabaseClient.getSession();
 
-    // Listen for auth state changes
-    const { data: {subscription} } = supabaseClient.client.auth.onAuthStateChange((_event, session) => {
-      supabaseClient.setSession(session);
-      supabaseClient.setUser(session?.user ?? null);
-    });
+      const { data: authListener } =
+        supabaseClient.client.auth.onAuthStateChange((_event, session) => {
+          if (session) supabaseClient.setSession(session);
+          setIsLoadingAuth(false);
+        });
 
-    return () => subscription.unsubscribe();
-  }, [supabaseClient, supabaseClient.user]);
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }, [supabaseClient]);
 
-  // Use useObserver to make sure React component reacts to MobX state changes
-  return (
-    <SupabaseAuthContext.Provider value={{ user: supabaseClient.user, supabase: supabaseClient }}>
-      {children}
-    </SupabaseAuthContext.Provider>
-  );
-});
+    return (
+      <SupabaseAuthContext.Provider
+        value={{ user: supabaseClient.user, client: supabaseClient, isLoadingAuth: isLoadingAuth }}
+      >
+        {children}
+      </SupabaseAuthContext.Provider>
+    );
+  }
+);

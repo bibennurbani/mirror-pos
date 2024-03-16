@@ -1,5 +1,4 @@
-// RouteProvider.tsx
-import React, { ReactNode } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
@@ -8,39 +7,50 @@ import DashboardPage from "../components/mains/DashboardPage";
 import LoginPage from "../components/auths/LoginPage";
 import NotFoundPage from "../components/NotFoundPage";
 import SignUpPage from "../components/auths/SignUpPage";
+import ProfilePage from "../components/mains/ProfilePage";
 
-interface RouteProviderProps {
-  children?: ReactNode; // Ensure this is here
-}
+const RouteProvider: React.FC = () => {
+  const { user, isLoadingAuth } = useAuth();
 
-const RouteProvider: React.FC<RouteProviderProps> = ({ children }) => {
-  // Suppose useAuth hook is accessible here, either directly or by lifting state up
-  // This is conceptual; you'll adjust based on your auth state management
-  const { user } = useAuth(); // Make sure you have access to your auth state here
+  if (isLoadingAuth) {
+    return <div>Loading...</div>; // Show a loading indicator or return null
+  }
+
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* Redirect base URL based on authentication status */}
         <Route
           path="/"
-          element={
-            user ? (
-              <Navigate to={PATH_DASHBOARD.root} />
-            ) : (
-              <Navigate to={PATH_AUTH.login} />
-            )
-          }
+          element={user ? <Navigate replace to={PATH_DASHBOARD.root} /> : <Navigate replace to={PATH_AUTH.login} />}
         />
+
+        {/* Public routes */}
         <Route path={PATH_AUTH.login} element={<LoginPage />} />
         <Route path={PATH_AUTH.register} element={<SignUpPage />} />
+
+        {/* Protected routes wrapped in a ProtectedRoute component */}
         <Route
           path={PATH_DASHBOARD.root}
-          element={<ProtectedRoute component={DashboardPage} />}
+          element={
+            <ProtectedRoute>
+              <DashboardPage/>
+            </ProtectedRoute>
+          }
         />
-        {/* Define other routes and potentially protected routes as needed */}
+        <Route
+          path={PATH_DASHBOARD.profile}
+          element={
+            <ProtectedRoute>
+              <ProfilePage/>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback for unmatched routes */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      {children}
     </BrowserRouter>
   );
 };

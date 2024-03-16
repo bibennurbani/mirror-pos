@@ -5,18 +5,24 @@ import { supabase } from "../supabaseClient";
 
 @model("SupabaseClientStore")
 export class SupabaseClientStore extends Model({
-  // Properties are now optional and don't have to be initialized immediately
   user: prop<User | null>(null).withSetter(),
-  session: prop<Session | null>(null).withSetter(),
+  session: prop<Session | null>(null),
 }) {
+  // Properties are now optional and don't have to be initialized immediately
+  isAuthed: boolean = false;
+  isInitialized: boolean = false;
 
   @modelAction
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
+    if(data.user && data.session){
+      this.setSession(data.session);
+    }
+
     if (error) throw error;
-    
-    return {user: data.user, session:data.session, error}
+
+    return { user: data.user, session: data.session, error }
   }
 
   @modelAction
@@ -30,27 +36,27 @@ export class SupabaseClientStore extends Model({
 
   @modelAction
   async signUp(email: string, password: string) {
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ password:', password)
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ email:', email)
     const { data, error } = await supabase.auth.signUp({ email, password });
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ supabase:', supabase)
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ error:', error)
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ data:', data)
 
     if (error) throw error;
 
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ data:', data);
-    console.log('🚀 ~ SupabaseClientStore ~ signUp ~ error:', error);
-    
-    return {user: data.user, session:data.session, error}
+    return { user: data.user, session: data.session, error }
   }
 
   @modelAction
   getSession() {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    this.client.auth.getSession().then(({ data: { session } }) => {
+      if (session){
         this.setSession(session)
-        this.setUser(session?.user ?? null)
+      }
     });
+  }
+
+  @modelAction
+  setSession(session: Session) {
+    this.session = session;
+    this.isAuthed = !!session;
+    this.setUser(session.user);
   }
 
   // Getter to expose the Supabase client for direct queries from components
@@ -73,16 +79,13 @@ export class SupabaseClientStore extends Model({
   //   }
   // }
 
-  
+
   // createFetcher = async (table:string,fields:string) => {
   //   const query = this.client.from(table).select(fields)
   //   const { data, error, status } = await query;
-  //   console.log('🚀 ~ SupabaseClientStore ~ createFetcher= ~ status:', status)
-  //   console.log('🚀 ~ SupabaseClientStore ~ createFetcher= ~ error:', error)
-  //   console.log('🚀 ~ SupabaseClientStore ~ createFetcher= ~ data:', data)
 
   //   return data;
   // }
 
-  
+
 }

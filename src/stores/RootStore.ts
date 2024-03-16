@@ -1,24 +1,24 @@
-import { model, Model, prop, registerRootStore } from "mobx-keystone";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { model, Model, registerRootStore } from "mobx-keystone";
 import { SupabaseClientStore } from "./SupabaseClientStore";
 import { AppStore } from "./AppStore";
 import { ApiStore } from "./ApiStore";
+import { PageStore } from "./PageStore";
 
-@model("budgetapp/RootStore")
-export class RootStore extends Model({
-  supabaseClient: prop<SupabaseClientStore>(),
-  app: prop<AppStore | undefined>(),
-  api: prop<ApiStore | undefined>(),
-}) {
+@model("RootStore")
+export class RootStore extends Model({}) {
+  supabaseClient: SupabaseClientStore;
+  api: ApiStore;
+  app: AppStore;
+  page: PageStore;
+
   constructor() {
-    super({
-      supabaseClient: new SupabaseClientStore({}),
-      app: undefined,
-      api: undefined
-    });
-
+    super({});
+    // Properly initialize here
     this.supabaseClient = new SupabaseClientStore({});
-    this.app = new AppStore(this); // Pass RootStore reference
-    this.api = new ApiStore(this); // Pass RootStore reference
+    this.api = new ApiStore(this);
+    this.app = new AppStore(this);
+    this.page = new PageStore(this);
 
     registerRootStore(this);
   }

@@ -2,28 +2,22 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { PATH_AUTH } from "../../routes/paths";
-import { useStore } from "../../hooks/useStore";
 
 const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { supabase } = useAuth(); // Assuming your useAuth hook exposes a signUp method
-  const { rootStore } = useStore();
+  const { client } = useAuth(); // Assuming your useAuth hook exposes a signUp method
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const { user, error: signUpError } = await supabase.signUp(
+      const { user, error: signUpError } = await client.signUp(
         email,
         password
       );
-      console.log("🚀 ~ handleSubmit ~ signUpError:", signUpError);
-      console.log("🚀 ~ handleSubmit ~ user:", user);
 
       if (signUpError || !user) throw signUpError;
-
-      // rootStore.app?.profile.insertProfile({ id: user.id, username: user.email });
 
       navigate(PATH_AUTH.login); // Navigate to login page or dashboard as per your flow
     } catch (error) {

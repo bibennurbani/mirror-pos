@@ -73,7 +73,7 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
         }
     }
 
-    async update(id: string, newData: ProfileI): Promise<void> {
+    async update(id: string, newData: Partial<ProfileI>): Promise<void> {
         const { error } = await this.rootStore.supabaseClient.client
             .from('profiles')
             .update(newData)

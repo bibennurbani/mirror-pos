@@ -1,7 +1,7 @@
 // src/stores/ProfileStore.ts
-import { Model, model, prop, modelAction } from 'mobx-keystone';
-import { supabase } from '../../supabaseClient';
+import { Model, model, modelAction, prop } from 'mobx-keystone';
 import { RootStore } from '../RootStore';
+import { handleError } from '../../utils/errorHandler';
 
 export interface ProfileI {
   id: string;
@@ -15,54 +15,84 @@ export interface ProfileI {
 
 @model("ProfileStore")
 export class ProfileStore extends Model({
-  // You might want to track the current user's profile as an observable property
-  currentProfile: prop<ProfileI | null>(null),
+  currentProfile: prop<ProfileI | null>().withSetter(),
+  error: prop<string | null>(),
+  loading: prop<boolean>()
 }) {
   rootStore: RootStore;
+  
+
   constructor(rootStore: RootStore) {
-    super({});
+    super({
+      currentProfile: null,
+      error: null,
+      loading: false
+    });
     this.rootStore = rootStore;
   }
 
   @modelAction
-  async fetchProfile(userId: string): Promise<void> {
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  setLoading(loading: boolean) {
+    this.loading = loading;
+  }
 
-    if (error) {
-      console.error('Error fetching profile:', error.message);
-      return;
+  @modelAction
+  setError(errorMessage: string | null) {
+    this.error = errorMessage;
+  }
+
+  @modelAction
+  async fetchProfile(userId: string): Promise<ProfileI | undefined> {
+    this.setLoading(true);
+    try {
+      const profile = await this.rootStore.api.profile.getById(userId);
+      if (profile) {
+        this.setCurrentProfile(profile)
+        this.setError(null); // Clear error after successful fetch
+        return profile;
+      } else {
+        this.setError('Profile not found.');
+      }
+    } catch (error) {
+      const errorMessage = handleError(error);
+      this.setError('Error fetching profile: ' + errorMessage);
     }
-
-    this.currentProfile = profile;
+    finally {
+      this.setLoading(false);
+    }
   }
 
   @modelAction
   async updateProfile(profileData: Partial<ProfileI>): Promise<void> {
-    const { data: updatedProfile, error } = await supabase
-      .from('profiles')
-      .update(profileData)
-      .match({ id: this.currentProfile?.id });
-
-    if (error) {
-      console.error('Error updating profile:', error.message);
+    if (!this.currentProfile) {
+      this.setError('No profile selected for update.');
       return;
     }
-
-    this.currentProfile = updatedProfile ? updatedProfile[0]:null;
+    this.setLoading(true);
+    try {
+      await this.rootStore.api?.profile.update(this.currentProfile.id, profileData);
+      this.setCurrentProfile({ ...this.currentProfile, ...profileData });
+      this.setError(null); // Clear error after successful update
+    } catch (error) {
+      const errorMessage = handleError(error);
+      this.setError('Error fetching profile: ' + errorMessage);
+    } finally {
+      this.setLoading(false);
+    }
   }
 
   @modelAction
   async insertProfile(profileData: ProfileI): Promise<void> {
-    const { error } = await supabase
-      .from('profiles')
-      .insert([profileData]);
-
-    if (error) {
-      console.error('Error inserting profile:', error.message);
+    this.setLoading(true);
+    try {
+      const profile = await this.rootStore.api?.profile.create(profileData);
+      this.setCurrentProfile(profile); // Assuming creation returns the new profile
+      this.setError(null); // Clear error after successful insertion
+    } catch (error) {
+      const errorMessage = handleError(error);
+      this.setError('Error fetching profile: ' + errorMessage);
+    } finally {
+      this.setLoading(false);
     }
   }
 

@@ -1,25 +1,14 @@
-import React from 'react';
-import { useAuth } from './hooks/useAuth';
-import './App.css'
+import React from "react";
+import "./App.css";
+import { observer } from "mobx-react-lite";
+import RouteProvider from "./contexts/RouteProvider";
 
-const App: React.FC = () => {
-  const { user } = useAuth();
-
+const App: React.FC = observer(() => {
   return (
     <div className="App">
-      {user ? (
-        <div>
-          <p>Welcome, {user.email}</p>
-          {/* Render components that require authentication */}
-        </div>
-      ) : (
-        <div>
-          <p>Please log in</p>
-          {/* Render public components */}
-        </div>
-      )}
+      <RouteProvider />
     </div>
   );
-};
+});
 
 export default App;

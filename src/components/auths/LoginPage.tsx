@@ -6,12 +6,12 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { supabase } = useAuth(); // Assuming your useAuth hook exposes a signIn method
+  const { client } = useAuth(); // Assuming your useAuth hook exposes a signIn method
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await supabase.signIn(email, password);
+      await client.signIn(email, password);
       navigate('/dashboard'); // Adjust the route as needed
     } catch (error) {
       alert('Failed to log in');
