@@ -1,54 +1,37 @@
-// src/stores/ProfileStore.ts
-import { Model, model, modelAction, prop } from 'mobx-keystone';
-import { RootStore } from '../RootStore';
-import { handleError } from '../../utils/errorHandler';
+import { model, Model, prop, modelAction } from "mobx-keystone";
+import { Profile } from "../../types";
+import { handleError } from "../../utils/errorHandler";
+import { RootStore } from "../RootStore";
 
-export interface ProfileI {
-  id: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  avatar_url?: string;
-  website?: string;
-  updated_at?: string;
-}
 
 @model("ProfileStore")
 export class ProfileStore extends Model({
-  currentProfile: prop<ProfileI | null>().withSetter(),
-  error: prop<string | null>(),
-  loading: prop<boolean>()
+  isLoading: prop<boolean>(false).withSetter(),
+  error: prop<string | null>(null).withSetter(),
+  profile: prop<Profile | null>(null).withSetter(),
 }) {
+
   rootStore: RootStore;
   
 
   constructor(rootStore: RootStore) {
     super({
-      currentProfile: null,
+      profile: null,
       error: null,
-      loading: false
+      isLoading: false
     });
     this.rootStore = rootStore;
   }
 
   @modelAction
-  setLoading(loading: boolean) {
-    this.loading = loading;
-  }
-
-  @modelAction
-  setError(errorMessage: string | null) {
-    this.error = errorMessage;
-  }
-
-  @modelAction
-  async fetchProfile(userId: string): Promise<ProfileI | undefined> {
-    this.setLoading(true);
+  async fetchProfile(userId: string): Promise<Profile | undefined> {
+    this.setIsLoading(true);
     try {
       const profile = await this.rootStore.api.profile.getById(userId);
       if (profile) {
-        this.setCurrentProfile(profile)
+        this.setProfile(profile)
         this.setError(null); // Clear error after successful fetch
+        console.log('🚀 ~ ProfileStore ~ fetchProfile ~ profile:', this.profile)
         return profile;
       } else {
         this.setError('Profile not found.');
@@ -58,43 +41,26 @@ export class ProfileStore extends Model({
       this.setError('Error fetching profile: ' + errorMessage);
     }
     finally {
-      this.setLoading(false);
+      this.setIsLoading(false);
     }
   }
 
   @modelAction
-  async updateProfile(profileData: Partial<ProfileI>): Promise<void> {
-    if (!this.currentProfile) {
+  async updateProfile(profileData: Partial<Profile>): Promise<void> {
+    if (!this.profile) {
       this.setError('No profile selected for update.');
       return;
     }
-    this.setLoading(true);
+    this.setIsLoading(true);
     try {
-      await this.rootStore.api?.profile.update(this.currentProfile.id, profileData);
-      this.setCurrentProfile({ ...this.currentProfile, ...profileData });
+      await this.rootStore.api?.profile.update(this.profile.id, profileData);
+      this.setProfile({ ...this.profile, ...profileData });
       this.setError(null); // Clear error after successful update
     } catch (error) {
       const errorMessage = handleError(error);
       this.setError('Error fetching profile: ' + errorMessage);
     } finally {
-      this.setLoading(false);
+      this.setIsLoading(false);
     }
   }
-
-  @modelAction
-  async insertProfile(profileData: ProfileI): Promise<void> {
-    this.setLoading(true);
-    try {
-      const profile = await this.rootStore.api?.profile.create(profileData);
-      this.setCurrentProfile(profile); // Assuming creation returns the new profile
-      this.setError(null); // Clear error after successful insertion
-    } catch (error) {
-      const errorMessage = handleError(error);
-      this.setError('Error fetching profile: ' + errorMessage);
-    } finally {
-      this.setLoading(false);
-    }
-  }
-
-  // Add more actions as needed, e.g., deleteProfile
 }

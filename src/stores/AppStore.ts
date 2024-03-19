@@ -1,18 +1,21 @@
-import { Model, model } from 'mobx-keystone';
-import { RootStore } from './RootStore';
-import { ProfileStore } from './apps/ProfileStore';
+// src/stores/AppStore.ts
+import { model, Model, prop } from "mobx-keystone";
+import { RootStore } from "./RootStore";
+import { ProfileStore } from "./apps/ProfileStore";
 
 @model("AppStore")
-export class AppStore  extends Model({}){
+export class AppStore extends Model({
+  // Assuming ProfileStore is already a mobx-keystone model
+  profile: prop<ProfileStore>(),
+}) {
   rootStore: RootStore;
-  profile: ProfileStore;
-  loading: boolean = false;
 
   constructor(rootStore: RootStore) {
-    super({});
+    super({
+      // Initialize the ProfileStore with reference to the AppStore or RootStore if needed
+      profile: new ProfileStore(rootStore),
+    });
     this.rootStore = rootStore;
-    this.profile = new ProfileStore(rootStore); // Pass RootStore if needed
   }
 
-  // Actions and computed values that use this.rootStore to access other stores
 }

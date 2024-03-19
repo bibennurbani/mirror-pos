@@ -1,58 +1,29 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
-import ProtectedRoute from "../routes/ProtectedRoute";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardPage from "../components/mains/DashboardPage";
 import LoginPage from "../components/auths/LoginPage";
 import NotFoundPage from "../components/NotFoundPage";
 import SignUpPage from "../components/auths/SignUpPage";
 import ProfilePage from "../components/mains/ProfilePage";
+import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
+import ProtectedRoute from "../routes/ProtectedRoute";
+import { observer } from "mobx-react-lite";
 
-const RouteProvider: React.FC = () => {
-  const { user, isLoadingAuth } = useAuth();
-
-  if (isLoadingAuth) {
-    return <div>Loading...</div>; // Show a loading indicator or return null
-  }
-
-
+export const RouteProvider: React.FC = observer(() => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect base URL based on authentication status */}
-        <Route
-          path="/"
-          element={user ? <Navigate replace to={PATH_DASHBOARD.root} /> : <Navigate replace to={PATH_AUTH.login} />}
-        />
+        {/* Use ProtectedRoute to handle redirection logic based on authentication status */}
+        <Route path={PATH_AUTH.login} element={<ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}><LoginPage /></ProtectedRoute>} />
+        <Route path={PATH_AUTH.register} element={<ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}><SignUpPage /></ProtectedRoute>} />
 
-        {/* Public routes */}
-        <Route path={PATH_AUTH.login} element={<LoginPage />} />
-        <Route path={PATH_AUTH.register} element={<SignUpPage />} />
-
-        {/* Protected routes wrapped in a ProtectedRoute component */}
-        <Route
-          path={PATH_DASHBOARD.root}
-          element={
-            <ProtectedRoute>
-              <DashboardPage/>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path={PATH_DASHBOARD.profile}
-          element={
-            <ProtectedRoute>
-              <ProfilePage/>
-            </ProtectedRoute>
-          }
-        />
+        {/* Protected routes that require authentication */}
+        <Route path={PATH_DASHBOARD.root} element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path={PATH_DASHBOARD.profile} element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
         {/* Fallback for unmatched routes */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
-};
-
-export default RouteProvider;
+});

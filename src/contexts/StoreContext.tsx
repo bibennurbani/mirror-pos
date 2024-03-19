@@ -1,18 +1,15 @@
-import React from "react";
-import { RootStore } from "../stores/RootStore";
+// src/contexts/StoreContext.tsx
+import React, { ReactNode, createContext } from 'react';
+import { RootStore } from '../stores/RootStore';
 
-interface StoreContextValue {
-  rootStore: RootStore;
+interface StoreProviderProps {
+  root: RootStore;
 }
 
-export const StoreContext = React.createContext<StoreContextValue>({} as StoreContextValue);
+export const StoreContext = createContext<StoreProviderProps>({} as StoreProviderProps);
 
-export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const rootStore = React.useMemo(() => new RootStore(), []);
-
+export const StoreProvider: React.FC<{ children: ReactNode, root: RootStore }> = ({ children, root }) => {
   return (
-    <StoreContext.Provider value={{ rootStore }}>
-      {children}
-    </StoreContext.Provider>
+    <StoreContext.Provider value={{root}}>{children}</StoreContext.Provider>
   );
 };

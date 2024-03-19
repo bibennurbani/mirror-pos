@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import App from "./App.tsx";
-import "./index.css";
 import { StoreProvider } from "./contexts/StoreContext.tsx";
-import { SupabaseAuthProvider } from "./contexts/auth/supabaseContext.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
+import rootStoreInstance from "./stores/RootStore.ts";
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -19,12 +19,14 @@ const updateSW = registerSW({
   },
 });
 
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <StoreProvider>
-      <SupabaseAuthProvider>
-          <App />
-      </SupabaseAuthProvider>
+    <StoreProvider root={rootStoreInstance} >
+      <AuthProvider client={rootStoreInstance.supabase}>
+        <App />
+      </AuthProvider>
     </StoreProvider>
   </React.StrictMode>
 );

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { AuthTokenResponsePassword } from '@supabase/supabase-js';
+import { PATH_DASHBOARD } from '../../routes/paths';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -11,8 +13,14 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await client.signIn(email, password);
-      navigate('/dashboard'); // Adjust the route as needed
+      const {data,error:signInError} = (await client.signIn(
+        email,
+        password
+      )) as AuthTokenResponsePassword;
+      console.log('🚀 ~ handleSubmit ~ signInError:', signInError)
+
+      if (signInError || !data.user || !data.session) throw signInError;
+      navigate(PATH_DASHBOARD.root); // Adjust the route as needed
     } catch (error) {
       alert('Failed to log in');
       console.error(error);

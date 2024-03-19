@@ -1,23 +1,33 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 import { useAuth } from "../hooks/useAuth";
-import { PATH_AUTH } from "../routes/paths";
+import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
 
-// Define props type to include children
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  redirectPath?:string;
+  onlyUnauthenticated?:boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user } = useAuth();
+const ProtectedRoute = observer<ProtectedRouteProps>(({ children, redirectPath = PATH_DASHBOARD.root, onlyUnauthenticated = false }) => {
+  const { client } = useAuth();
+  const {currentUser,isInitialized} = client;
 
-  if (!user) {
-    // Redirect to the login page if not authenticated
-    return <Navigate to={PATH_AUTH.login} replace />;
+  if (!isInitialized) {
+    return <div>Loading...</div>; // Or any loader component
   }
 
-  // If authenticated, render the children passed to ProtectedRoute
-  return <>{children}</>;
-};
+  // Redirect already authenticated users away from login/signup pages
+  if (onlyUnauthenticated && currentUser) {
+    return <Navigate replace to={redirectPath} />;
+  }
+
+  // Redirect unauthenticated users away from protected pages
+  if (!onlyUnauthenticated && !currentUser) {
+    return <Navigate replace to={PATH_AUTH.login} />;
+  }
+
+  return children;
+});
 
 export default ProtectedRoute;

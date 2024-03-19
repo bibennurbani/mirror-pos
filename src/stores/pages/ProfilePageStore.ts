@@ -1,38 +1,52 @@
-// src/stores/ProfileUIStore.ts
-import { Model, model, prop, modelAction } from "mobx-keystone";
-import { ProfileI } from "../apps/ProfileStore";
-import { RootStore } from "../RootStore";
+import { model, Model, prop, modelAction } from 'mobx-keystone';
+import { Profile } from '../../types';
+import { RootStore } from '../RootStore';
 
-@model("ProfileUIStore")
+@model('ProfilePageStore')
 export class ProfilePageStore extends Model({
-  isEditMode: prop<boolean>(false),
-  // Initial profile form fields - could be empty or populated with an existing profile
-  profileForm: prop<Partial<ProfileI>>(),
+  // UI-specific states such as form data and loading states
+  profileFormData: prop<Partial<Profile>>(),
+  isLoading: prop<boolean>(false).withSetter(),
 }) {
-    rootStore: RootStore;
+  rootStore: RootStore;
 
-    constructor(rootStore : RootStore) {
-        super({
-            profileForm: {} as ProfileI
-        });
-        this.setEditMode(false);
+  constructor(rootStore: RootStore) {
+    super({
+      profileFormData: {}
+    });
+    this.rootStore = rootStore;
+  }
 
-        this.rootStore = rootStore;
+  @modelAction
+  setProfileFormData(profile: Partial<Profile>) {
+    this.profileFormData = profile;
+  }
+
+  @modelAction
+  async loadAndSetProfile(userId: string) {
+    this.setIsLoading(true);
+    try {
+      const profileData = await this.rootStore.app.profile.fetchProfile(userId);
+      if (profileData) {
+        this.setProfileFormData(profileData);
+      }
+    } catch (error) {
+      console.error("Error loading profile", error);
+    } finally {
+      this.setIsLoading(false);
     }
-
-  @modelAction
-  setEditMode(isEditMode: boolean) {
-    this.isEditMode = isEditMode;
   }
 
   @modelAction
-  setProfileForm(profile: Partial<ProfileI>) {
-    this.profileForm = profile;
+  async saveProfileChanges(profileData: Partial<Profile>) {
+    this.setIsLoading(true);
+    try {
+      await this.rootStore.app.profile.updateProfile(profileData);
+      this.setProfileFormData({ ...this.profileFormData, ...profileData });
+    } catch (error) {
+      console.error("Error saving profile changes", error);
+    } finally {
+      this.setIsLoading(false);
+    }
   }
-
-  @modelAction
-  updateProfileField(field: keyof ProfileI, value: string) {
-    this.profileForm[field] = value;
-  }
-
 }

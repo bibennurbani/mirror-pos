@@ -1,75 +1,79 @@
-import React, { useState } from "react";
+import { Container, Box, Typography, Button } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { PATH_AUTH } from "../../routes/paths";
+import { PATH_DASHBOARD } from "../../routes/paths";
+import { CGTextField } from "../form";
+import FormProvider from "../../contexts/FormProvider";
+
+
+
+interface SignUpFormData {
+  email: string;
+  password: string;
+}
 
 const SignUpPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { client } = useAuth(); // Assuming your useAuth hook exposes a signUp method
+  const { client } = useAuth();
+  const methods = useForm<SignUpFormData>();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = async (data: SignUpFormData) => {
+    console.log('🚀 ~ onSubmit ~ data:', data)
     try {
-      const { user, error: signUpError } = await client.signUp(
-        email,
-        password
-      );
-
-      if (signUpError || !user) throw signUpError;
-
-      navigate(PATH_AUTH.login); // Navigate to login page or dashboard as per your flow
+      const response = await client.register(data.email, data.password);
+      if (response.error) {
+        alert('Failed to sign up: ' + response.error.message);
+      } else {
+        navigate(PATH_DASHBOARD.root);
+      }
     } catch (error) {
-      alert("Error signing up");
-      console.error(error);
+      console.error('SignUp error:', error);
+      alert('Failed to sign up');
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label
-            htmlFor="email"
-            style={{ display: "block", marginBottom: "5px" }}
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label
-            htmlFor="password"
-            style={{ display: "block", marginBottom: "5px" }}
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-        <button
-          type="submit"
-          style={{ width: "100%", padding: "10px", cursor: "pointer" }}
-        >
-          Sign Up
-        </button>
-      </form>
-    </div>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+          <Box>
+            <CGTextField
+              name="email"
+              label="Email Address"
+              autoComplete="email"
+              autoFocus
+              required
+            />
+            <CGTextField
+              name="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              required
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+          </Box>
+        </FormProvider>
+      </Box>
+    </Container>
   );
 };
 
