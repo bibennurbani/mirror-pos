@@ -1,25 +1,90 @@
-# React + TypeScript + Vite + Mobx
+* * *
 
-### AppStore
+Budgeting App
+=============
 
-The `AppStore` acts as a central hub for managing the application-level state and logic. It encapsulates the business logic of the application, interfacing between the UI and the backend services or APIs. This store is responsible for handling actions, managing domain-specific entities, and providing methods for modifying the application state that reflects user interactions or data changes. It might include operations like authentication, managing user sessions, handling complex user interactions that affect multiple parts of the application, and aggregating data needed for the application's views.
+A React + TypeScript + Vite + Mobx project focused on delivering a seamless budgeting tool. This application leverages the power of MobX for state management, structured around `AppStore`, `ApiStore`, and `PageStore` for a clean and scalable architecture.
 
-For instance, in a blogging platform, the `AppStore` might manage entities like articles, comments, and user profiles, providing methods to fetch, add, update, and delete these entities. It would interact with the `ApiStore` to perform these operations against a backend service.
+State Management
+----------------
 
-### ApiStore
+This project uses a three-tiered state management strategy to ensure a clear separation of concerns and maintainability:
 
-The `ApiStore` is specifically focused on interactions with external APIs or backend services. It abstracts away the details of API calls, providing a clean and simplified API for the rest of the application to use when accessing external data. This store handles making HTTP requests, managing API endpoints, and processing responses. It's responsible for error handling, transforming data, and potentially caching responses to improve performance and reduce network traffic.
+*   **AppStore**: Manages the core business logic and state of the application.
+*   **ApiStore**: Handles interactions with external APIs and data fetching.
+*   **PageStore**: Manages UI-specific state and logic for individual pages or components.
 
-In the context of the same blogging platform, the `ApiStore` would contain methods for all the HTTP requests related to articles, comments, and user profiles, such as fetching a list of articles, submitting a new comment, or updating a user profile. It acts as a data layer that the `AppStore` relies on to perform data-related operations.
+This architecture supports complex user interactions, efficient data management, and synchronization between the UI and application state.
 
-### PageStore
+Key Dependencies
+----------------
 
-`PageStore` is tailored for managing state and logic that are specific to individual pages or components of the application. It is more granular and focused compared to the `AppStore`, dealing with the UI state that doesn't need to be shared across the application. This could include form states, local UI preferences, page-specific data fetching, and temporary UI states like loaders, modals, and notifications.
+*   React and React DOM for UI development.
+*   MobX and MobX Keystone for state management.
+*   MUI for React components that implement Google's Material Design.
+*   React Router for navigation between pages.
+*   Supabase for easy integration with the Supabase backend.
+*   Axios for promise-based HTTP client.
+*   Yup for value parsing and validation.
+*   Vite as a build tool for a faster and leaner development experience.
 
-Each page or a complex component might have its associated `PageStore`, allowing for a modular and organized state management approach. These stores can still interact with the `AppStore` for application-wide state or actions and use the `ApiStore` for data fetching or submitting.
+Getting Started
+---------------
 
-For the blogging platform, a `ProfilePageStore` might manage the state of the profile editing form, including form validation, showing or hiding sections of the form, and temporarily displaying success or error messages after an update operation. It would use the `AppStore` or `ApiStore` to fetch the initial profile data and submit the changes.
+### Prerequisites
 
----
+Ensure you have Node.js installed on your machine to use npm commands.
 
-In summary, `AppStore`, `ApiStore`, and `PageStore` together form a comprehensive state management architecture that separates concerns, simplifies data handling, and enhances the modularity and scalability of a React application. Each store has a distinct responsibility, working in concert to support complex user interactions, manage data effectively, and keep the UI in sync with the application state.
+### Installation
+
+1.  Clone the repository:
+    
+    shCopy code
+    
+    `git clone https://github.com/bibennurbani/budgeting-app.git`
+    
+2.  Navigate to the project directory:
+    
+    shCopy code
+    
+    `cd budgeting-app`
+    
+3.  Install NPM packages:
+    
+    shCopy code
+    
+    `npm install`
+    
+
+### Available Scripts
+
+*   `npm run dev`: Starts the development server.
+*   `npm run build:dev`: Builds the app for development.
+*   `npm run build:prod`: Builds the app for production.
+*   `npm run lint`: Lints and fixes files.
+*   `npm run preview`: Preview the production build.
+*   `npm run serve`: Serve the development build.
+*   `npm run serve:dev`: Serve the development build.
+*   `npm run serve:prod`: Serve the production build.
+
+### Running the Project
+
+To start the development server:
+
+shCopy code
+
+`npm run dev`
+
+Open [http://localhost:5173/](http://localhost:5173/) to view it in your browser. The page will reload when you make changes.
+
+Contributing
+------------
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+License
+-------
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+* * *

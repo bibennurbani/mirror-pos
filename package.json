@@ -10,6 +10,7 @@
     "build:prod": "tsc && vite build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+    "serve": "npm run serve:dev",
     "serve:dev": "serve -s dist -l 3100",
     "serve:prod": "serve -s dist -l 3200"
   },

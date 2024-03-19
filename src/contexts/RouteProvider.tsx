@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import DashboardPage from "../components/mains/DashboardPage";
 import LoginPage from "../components/auths/LoginPage";
 import NotFoundPage from "../components/NotFoundPage";
@@ -9,10 +9,14 @@ import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import { observer } from "mobx-react-lite";
 
-export const RouteProvider: React.FC = observer(() => {
+export const RouteProvider: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+      <Route
+          path="/"
+          element={<Navigate replace to={PATH_DASHBOARD.root} />}
+        />
         {/* Use ProtectedRoute to handle redirection logic based on authentication status */}
         <Route path={PATH_AUTH.login} element={<ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}><LoginPage /></ProtectedRoute>} />
         <Route path={PATH_AUTH.register} element={<ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}><SignUpPage /></ProtectedRoute>} />
@@ -26,4 +30,4 @@ export const RouteProvider: React.FC = observer(() => {
       </Routes>
     </BrowserRouter>
   );
-});
+};

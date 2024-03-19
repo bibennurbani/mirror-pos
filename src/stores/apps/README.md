@@ -1,0 +1,5 @@
+## AppStore
+
+The `AppStore` acts as a central hub for managing the application-level state and logic. It encapsulates the business logic of the application, interfacing between the UI and the backend services or APIs. This store is responsible for handling actions, managing domain-specific entities, and providing methods for modifying the application state that reflects user interactions or data changes. It might include operations like authentication, managing user sessions, handling complex user interactions that affect multiple parts of the application, and aggregating data needed for the application's views.
+
+For instance, in a blogging platform, the `AppStore` might manage entities like articles, comments, and user profiles, providing methods to fetch, add, update, and delete these entities. It would interact with the `ApiStore` to perform these operations against a backend service.
