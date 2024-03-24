@@ -8,4 +8,4 @@ export { default as CGSwitch } from './CGSwitch';
 // export { default as CGSlider } from './CGSlider';
 export { default as CGTextField } from './CGTextField';
 // export { default as CGRadioGroup } from './CGRadioGroup';
-// export { default as CGAutocomplete } from './CGAutocomplete';
+export { default as CGAutocomplete } from './CGAutoComplete';

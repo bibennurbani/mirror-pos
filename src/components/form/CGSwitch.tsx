@@ -1,6 +1,4 @@
-// form
 import { useFormContext, Controller } from "react-hook-form";
-// @mui
 import {
   Switch,
   FormControlLabel,
@@ -8,18 +6,12 @@ import {
   FormControlLabelProps,
 } from "@mui/material";
 
-// ----------------------------------------------------------------------
-
 interface CGSwitchProps extends Omit<FormControlLabelProps, 'control'> {
   name: string;
   helperText?: string;
 }
 
-export default function CGSwitch({
-  name,
-  helperText,
-  ...other
-}: CGSwitchProps) {
+const CGSwitch: React.FC<CGSwitchProps> = ({ name, helperText, ...other }) => {
   const { control } = useFormContext();
 
   return (
@@ -32,7 +24,6 @@ export default function CGSwitch({
             control={<Switch {...field} checked={field.value} />}
             {...other}
           />
-
           {(!!error || helperText) && (
             <FormHelperText error={!!error}>
               {error ? error?.message : helperText}
@@ -43,3 +34,5 @@ export default function CGSwitch({
     />
   );
 }
+
+export default CGSwitch;

@@ -8,6 +8,8 @@ import FormProvider from "../../contexts/FormProvider";
 import { LoadingButton } from "@mui/lab";
 import { Grid, Card, Box, Stack } from "@mui/material";
 import { CGTextField } from "../form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { profileSchema } from "../../types/Profile";
 
 const ProfilePage: React.FC = observer(() => {
   const { root } = useStore();
@@ -16,12 +18,13 @@ const ProfilePage: React.FC = observer(() => {
   const profilePageStore = root.page.profilePage; // Access ProfilePageStore
   const [userId, setUserId] = useState<string>();
 
-  const methods = useForm<Partial<Profile>>({
+  const methods = useForm<Profile>({
+    resolver: yupResolver(profileSchema),
     defaultValues: profilePageStore.profileFormData, // Initialize form with data from ProfilePageStore
   });
 
   const {
-    formState: { isSubmitting },
+    formState: { isDirty, isLoading },
     reset,
   } = methods;
 
@@ -37,8 +40,9 @@ const ProfilePage: React.FC = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const onSubmit = (data: Partial<Profile>) => {
-    profilePageStore.saveProfileChanges(data);
+  const onSubmit = async (data: Partial<Profile>) => {
+    await profilePageStore.saveProfileChanges(data);
+    reset(profilePageStore.profileFormData)
   };
 
   return (
@@ -65,12 +69,13 @@ const ProfilePage: React.FC = observer(() => {
               <CGTextField name="website" label="Website" />
             </Box>
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              {/* <RHFTextField name="about" multiline rows={4} label="About" /> */}
+              {/* <CGTextField name="about" multiline rows={4} label="About" /> */}
 
               <LoadingButton
                 type="submit"
                 variant="contained"
-                loading={isSubmitting}
+                loading={isLoading}
+                disabled={!isDirty}
               >
                 Save Changes
               </LoadingButton>

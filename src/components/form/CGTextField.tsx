@@ -6,24 +6,26 @@ interface CGTextFieldProps extends Omit<TextFieldProps, 'name' | 'defaultValue'>
   helperText?: string;
 }
 
-export default function CGTextField({ name, helperText, ...other }: CGTextFieldProps) {
+const CGTextField: React.FC<CGTextFieldProps> = ({ name, helperText, ...other }) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
+      render={({ field: { ref, ...field }, fieldState: { error } }) => (
         <TextField
           {...field}
+          inputRef={ref}
           fullWidth
-          // Ensure the value is never null by providing an empty string as a fallback
-          value={field.value === null || field.value === undefined ? '' : field.value}
-          error={!!error}
-          helperText={error ? error.message : helperText}
+          value={field.value ?? ''}
+          error={Boolean(error)}
+          helperText={error?.message || helperText}
           {...other}
         />
       )}
     />
   );
 }
+
+export default CGTextField;
