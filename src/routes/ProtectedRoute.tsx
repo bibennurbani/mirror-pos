@@ -1,17 +1,17 @@
-import { Navigate } from "react-router-dom";
-import { observer } from "mobx-react-lite";
-import { useAuth } from "../hooks/useAuth";
-import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
+import { Navigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { useAuth } from '../hooks/useAuth';
+import { PATH_AUTH, PATH_DASHBOARD } from '../routes/paths';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  redirectPath?:string;
-  onlyUnauthenticated?:boolean;
+  redirectPath?: string;
+  onlyUnauthenticated?: boolean;
 }
 
 const ProtectedRoute = observer<ProtectedRouteProps>(({ children, redirectPath = PATH_DASHBOARD.root, onlyUnauthenticated = false }) => {
   const { client } = useAuth();
-  const {currentUser,isInitialized} = client;
+  const { currentUser, isInitialized } = client;
 
   if (!isInitialized) {
     return <div>Loading...</div>; // Or any loader component
