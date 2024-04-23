@@ -8,7 +8,6 @@ const DashboardPage: React.FC = observer(() => {
   const { root } = useStore();
   const { app } = root;
   const { client } = useAuth();
-  console.log('🚀 ~ constDashboardPage:React.FC=observer ~ app:', app);
 
   // useEffect(() => {
   //   if (user && user.id) app.profile.fetchProfile(user.id);

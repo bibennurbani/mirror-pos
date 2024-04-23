@@ -1,24 +1,21 @@
-import { model, Model, prop, modelAction } from "mobx-keystone";
-import { Profile } from "../../types";
-import { handleError } from "../../utils/errorHandler";
-import { RootStore } from "../RootStore";
+import { model, Model, prop, modelAction } from 'mobx-keystone';
+import { Profile } from '../../types';
+import { handleError } from '../../utils/errorHandler';
+import { RootStore } from '../RootStore';
 
-
-@model("ProfileStore")
+@model('ProfileStore')
 export class ProfileStore extends Model({
   isLoading: prop<boolean>(false).withSetter(),
   error: prop<string | null>(null).withSetter(),
   profile: prop<Profile | null>(null).withSetter(),
 }) {
-
   rootStore: RootStore;
-  
 
   constructor(rootStore: RootStore) {
     super({
       profile: null,
       error: null,
-      isLoading: false
+      isLoading: false,
     });
     this.rootStore = rootStore;
   }
@@ -29,9 +26,9 @@ export class ProfileStore extends Model({
     try {
       const profile = await this.rootStore.api.profile.getById(userId);
       if (profile) {
-        this.setProfile(profile)
+        this.setProfile(profile);
         this.setError(null); // Clear error after successful fetch
-        console.log('🚀 ~ ProfileStore ~ fetchProfile ~ profile:', this.profile)
+        console.log('🚀 ~ ProfileStore ~ fetchProfile ~ profile:', this.profile);
         return profile;
       } else {
         this.setError('Profile not found.');
@@ -39,8 +36,7 @@ export class ProfileStore extends Model({
     } catch (error) {
       const errorMessage = handleError(error);
       this.setError('Error fetching profile: ' + errorMessage);
-    }
-    finally {
+    } finally {
       this.setIsLoading(false);
     }
   }
@@ -53,7 +49,7 @@ export class ProfileStore extends Model({
     }
     this.setIsLoading(true);
     try {
-      await this.rootStore.api?.profile.update(this.profile.id, profileData);
+      await this.rootStore.api.profile.update(this.profile.id, profileData);
       this.setProfile({ ...this.profile, ...profileData });
       this.setError(null); // Clear error after successful update
     } catch (error) {

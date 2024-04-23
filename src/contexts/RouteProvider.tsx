@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import DashboardPage from '../components/mains/DashboardPage';
-import LoginPage from '../components/auths/LoginPage';
+import DashboardPage from '../pages/mains/DashboardPage';
+import LoginPage from '../pages/auths/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
-import SignUpPage from '../components/auths/SignUpPage';
-import ProfilePage from '../components/mains/ProfilePage';
+import SignUpPage from '../pages/auths/SignUpPage';
+import ProfilePage from '../pages/mains/ProfilePage';
 import { PATH_AUTH, PATH_DASHBOARD } from '../routes/paths';
 import ProtectedRoute from '../routes/ProtectedRoute';
 
@@ -34,6 +34,14 @@ export const RouteProvider: React.FC = () => {
         {/* Protected routes that require authentication */}
         <Route
           path={PATH_DASHBOARD.root}
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={PATH_DASHBOARD.dashboard}
           element={
             <ProtectedRoute>
               <DashboardPage />

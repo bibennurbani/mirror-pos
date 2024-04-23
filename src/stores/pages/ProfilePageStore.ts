@@ -12,7 +12,7 @@ export class ProfilePageStore extends Model({
 
   constructor(rootStore: RootStore) {
     super({
-      profileFormData: {}
+      profileFormData: {},
     });
     this.rootStore = rootStore;
   }
@@ -26,12 +26,14 @@ export class ProfilePageStore extends Model({
   async loadAndSetProfile(userId: string) {
     this.setIsLoading(true);
     try {
-      const profileData = await this.rootStore.app.profile.fetchProfile(userId);
+      console.log('🚀 ~ ProfilePageStore ~ loadAndSetProfile ~ this.rootStore.app.profile.profile:', this.rootStore.app.profile.profile);
+
+      const profileData = this.rootStore.app.profile.profile ?? (await this.rootStore.app.profile.fetchProfile(userId));
       if (profileData) {
         this.setProfileFormData(profileData);
       }
     } catch (error) {
-      console.error("Error loading profile", error);
+      console.error('Error loading profile', error);
     } finally {
       this.setIsLoading(false);
     }
@@ -44,7 +46,7 @@ export class ProfilePageStore extends Model({
       await this.rootStore.app.profile.updateProfile(profileData);
       this.setProfileFormData({ ...this.profileFormData, ...profileData });
     } catch (error) {
-      console.error("Error saving profile changes", error);
+      console.error('Error saving profile changes', error);
     } finally {
       this.setIsLoading(false);
     }

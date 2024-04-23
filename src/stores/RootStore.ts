@@ -1,11 +1,11 @@
 // src/stores/RootStore.ts
-import { model, Model, modelAction, prop, registerRootStore } from "mobx-keystone";
-import { AppStore } from "./AppStore";
-import { ApiStore } from "./ApiStore";
-import { PageStore } from "./PageStore";
-import { SupabaseStore } from "./SupabaseStore"; // Ensure you import SupabaseStore
+import { model, Model, modelAction, prop, registerRootStore } from 'mobx-keystone';
+import { AppStore } from './AppStore';
+import { ApiStore } from './ApiStore';
+import { PageStore } from './PageStore';
+import { SupabaseStore } from './SupabaseStore'; // Ensure you import SupabaseStore
 
-@model("RootStore")
+@model('RootStore')
 export class RootStore extends Model({
   supabase: prop<SupabaseStore>(),
   app: prop<AppStore>(),
@@ -14,7 +14,7 @@ export class RootStore extends Model({
 }) {
   @modelAction
   initializeStores() {
-    console.log('🚀 ~ RootStore ~ initializeStores ~ initializeStores:')
+    console.log('🚀 ~ RootStore ~ initializeStores ~ initializeStores:');
     this.supabase = new SupabaseStore(this);
     this.app = new AppStore(this);
     this.api = new ApiStore(this);

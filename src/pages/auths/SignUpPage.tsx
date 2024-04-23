@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { PATH_DASHBOARD } from '../../routes/paths';
-import { CGTextField } from '../form';
+import { CGTextField } from '../../components/form';
 import FormProvider from '../../contexts/FormProvider';
 
 interface SignUpFormData {
