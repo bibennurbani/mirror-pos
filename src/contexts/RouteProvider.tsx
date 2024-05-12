@@ -1,48 +1,65 @@
-// RouteProvider.tsx
-import React, { ReactNode } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { PATH_AUTH, PATH_DASHBOARD } from "../routes/paths";
-import ProtectedRoute from "../routes/ProtectedRoute";
-import DashboardPage from "../components/mains/DashboardPage";
-import LoginPage from "../components/auths/LoginPage";
-import NotFoundPage from "../components/NotFoundPage";
-import SignUpPage from "../components/auths/SignUpPage";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import DashboardPage from '../pages/mains/DashboardPage';
+import LoginPage from '../pages/auths/LoginPage';
+import NotFoundPage from '../components/NotFoundPage';
+import SignUpPage from '../pages/auths/SignUpPage';
+import ProfilePage from '../pages/mains/ProfilePage';
+import { PATH_AUTH, PATH_DASHBOARD } from '../routes/paths';
+import ProtectedRoute from '../routes/ProtectedRoute';
 
-interface RouteProviderProps {
-  children?: ReactNode; // Ensure this is here
-}
-
-const RouteProvider: React.FC<RouteProviderProps> = ({ children }) => {
-  // Suppose useAuth hook is accessible here, either directly or by lifting state up
-  // This is conceptual; you'll adjust based on your auth state management
-  const { user } = useAuth(); // Make sure you have access to your auth state here
-
+export const RouteProvider: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='/' element={<Navigate replace to={PATH_DASHBOARD.root} />} />
+        {/* Use ProtectedRoute to handle redirection logic based on authentication status */}
         <Route
-          path="/"
+          path={PATH_AUTH.login}
           element={
-            user ? (
-              <Navigate to={PATH_DASHBOARD.root} />
-            ) : (
-              <Navigate to={PATH_AUTH.login} />
-            )
+            <ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}>
+              <LoginPage />
+            </ProtectedRoute>
           }
         />
-        <Route path={PATH_AUTH.login} element={<LoginPage />} />
-        <Route path={PATH_AUTH.register} element={<SignUpPage />} />
+        <Route
+          path={PATH_AUTH.register}
+          element={
+            <ProtectedRoute onlyUnauthenticated={true} redirectPath={PATH_DASHBOARD.root}>
+              <SignUpPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected routes that require authentication */}
         <Route
           path={PATH_DASHBOARD.root}
-          element={<ProtectedRoute component={DashboardPage} />}
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
         />
-        {/* Define other routes and potentially protected routes as needed */}
-        <Route path="*" element={<NotFoundPage />} />
+        <Route
+          path={PATH_DASHBOARD.dashboard}
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={PATH_DASHBOARD.profile}
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback for unmatched routes */}
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
-      {children}
     </BrowserRouter>
   );
 };
-
-export default RouteProvider;

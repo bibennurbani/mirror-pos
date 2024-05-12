@@ -1,21 +1,33 @@
-// ProtectedRoute.tsx
-import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 import { useAuth } from '../hooks/useAuth';
-import { PATH_AUTH } from './paths';
+import { PATH_AUTH, PATH_DASHBOARD } from '../routes/paths';
 
 interface ProtectedRouteProps {
-  component: React.ElementType;
+  children: React.ReactNode;
+  redirectPath?: string;
+  onlyUnauthenticated?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component: Component }) => {
-  const { user } = useAuth();
+const ProtectedRoute = observer<ProtectedRouteProps>(({ children, redirectPath = PATH_DASHBOARD.root, onlyUnauthenticated = false }) => {
+  const { client } = useAuth();
+  const { currentUser, isInitialized } = client;
 
-  if (!user) {
-    return <Navigate to={PATH_AUTH.login} replace />;
+  if (!isInitialized) {
+    return <div>Loading...</div>; // Or any loader component
   }
 
-  return <Component />;
-};
+  // Redirect already authenticated users away from login/signup pages
+  if (onlyUnauthenticated && currentUser) {
+    return <Navigate replace to={redirectPath} />;
+  }
+
+  // Redirect unauthenticated users away from protected pages
+  if (!onlyUnauthenticated && !currentUser) {
+    return <Navigate replace to={PATH_AUTH.login} />;
+  }
+
+  return children;
+});
 
 export default ProtectedRoute;

@@ -1,15 +1,39 @@
+// src/stores/AppStore.ts
+import { getSnapshot, model, Model, modelAction, prop } from 'mobx-keystone';
 import { RootStore } from './RootStore';
 import { ProfileStore } from './apps/ProfileStore';
+import { reaction } from 'mobx';
 
-export class AppStore {
+@model('AppStore')
+export class AppStore extends Model({
+  // Store in here should a mobx-keystone model
+  profile: prop<ProfileStore>(),
+}) {
   rootStore: RootStore;
-  profile: ProfileStore;
-  loading: boolean = false;
 
   constructor(rootStore: RootStore) {
+    super({
+      // Initialize the ProfileStore with reference to the AppStore or RootStore if needed
+      profile: new ProfileStore(rootStore),
+    });
     this.rootStore = rootStore;
-    this.profile = new ProfileStore(rootStore); // Pass RootStore if needed
+    // Setup a reaction to handle changes to currentUser
+    reaction(
+      () => this.rootStore.supabase.currentUser,
+      (currentUser) => {
+        if (currentUser) {
+          console.log('🚀 ~ AppStore ~ constructor ~ currentUser:', currentUser);
+          this.profile.fetchProfile(currentUser.id);
+        }
+      },
+      {
+        fireImmediately: true, // Trigger the reaction immediately with current value
+      }
+    );
   }
 
-  // Actions and computed values that use this.rootStore to access other stores
+  @modelAction
+  getProfile() {
+    return getSnapshot(this.profile);
+  }
 }

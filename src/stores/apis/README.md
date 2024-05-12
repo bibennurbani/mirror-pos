@@ -1,0 +1,5 @@
+## ApiStore
+
+The `ApiStore` is specifically focused on interactions with external APIs or backend services. It abstracts away the details of API calls, providing a clean and simplified API for the rest of the application to use when accessing external data. This store handles making HTTP requests, managing API endpoints, and processing responses. It's responsible for error handling, transforming data, and potentially caching responses to improve performance and reduce network traffic.
+
+In the context of the same blogging platform, the `ApiStore` would contain methods for all the HTTP requests related to articles, comments, and user profiles, such as fetching a list of articles, submitting a new comment, or updating a user profile. It acts as a data layer that the `AppStore` relies on to perform data-related operations.

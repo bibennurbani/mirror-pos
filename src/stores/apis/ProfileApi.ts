@@ -1,8 +1,8 @@
+import { Profile } from "../../types";
 import { RootStore } from "../RootStore";
-import { ProfileI } from "../apps/ProfileStore";
 import { AbstractApi } from "./AbstractApi";
 
-export default class ProfileApi extends AbstractApi<ProfileI>{
+export default class ProfileApi extends AbstractApi<Profile>{
     rootStore: RootStore;
 
     constructor(rootStore: RootStore) {
@@ -10,9 +10,9 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
         this.rootStore = rootStore;
     }
 
-    async getAll(): Promise<ProfileI[] | undefined> {
+    async getAll(): Promise<Profile[] | undefined> {
         try {
-            const { data, error } = await this.rootStore.supabaseClient.client
+            const { data, error } = await this.rootStore.supabase.client
                 .from('profiles')
                 .select('*');
             
@@ -28,9 +28,9 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
         }
     }
 
-    async getById(id: string): Promise<ProfileI | undefined> {
+    async getById(id: string): Promise<Profile | undefined> {
         try {
-            const { data, error } = await this.rootStore.supabaseClient.client
+            const { data, error } = await this.rootStore.supabase.client
                 .from('profiles')
                 .select('*')
                 .eq('id', id)
@@ -48,8 +48,8 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
         }
     }
 
-    async create(data: ProfileI): Promise<ProfileI> {
-        const { error } = await this.rootStore.supabaseClient.client
+    async create(data: Profile): Promise<Profile> {
+        const { error } = await this.rootStore.supabase.client
             .from('profiles')
             .insert([data]);
 
@@ -62,7 +62,7 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
     }
 
     async delete(id: string): Promise<void> {
-        const { error } = await this.rootStore.supabaseClient.client
+        const { error } = await this.rootStore.supabase.client
             .from('profiles')
             .delete()
             .match({ id });
@@ -73,8 +73,8 @@ export default class ProfileApi extends AbstractApi<ProfileI>{
         }
     }
 
-    async update(id: string, newData: ProfileI): Promise<void> {
-        const { error } = await this.rootStore.supabaseClient.client
+    async update(id: string, newData: Partial<Profile>): Promise<void> {
+        const { error } = await this.rootStore.supabase.client
             .from('profiles')
             .update(newData)
             .match({ id });
