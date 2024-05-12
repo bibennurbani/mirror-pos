@@ -1,4 +1,4 @@
-import { model, Model, prop, modelAction } from 'mobx-keystone';
+import { model, Model, prop, modelAction, getSnapshot } from 'mobx-keystone';
 import { Profile } from '../../types';
 import { RootStore } from '../RootStore';
 
@@ -11,6 +11,7 @@ export class ProfilePageStore extends Model({
   rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
+    console.log('🚀 ~ ProfilePageStore ~ constructor ~ rootStore:', rootStore);
     super({
       profileFormData: {},
     });
@@ -27,6 +28,8 @@ export class ProfilePageStore extends Model({
     this.setIsLoading(true);
     try {
       console.log('🚀 ~ ProfilePageStore ~ loadAndSetProfile ~ this.rootStore.app.profile.profile:', this.rootStore.app.profile.profile);
+      const profSnap = this.rootStore.app.getProfile();
+      console.log('🚀 ~ ProfilePageStore ~ loadAndSetProfile ~ profSnap:', profSnap);
 
       const profileData = this.rootStore.app.profile.profile ?? (await this.rootStore.app.profile.fetchProfile(userId));
       if (profileData) {

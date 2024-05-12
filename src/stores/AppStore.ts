@@ -1,5 +1,5 @@
 // src/stores/AppStore.ts
-import { model, Model, prop } from 'mobx-keystone';
+import { getSnapshot, model, Model, modelAction, prop } from 'mobx-keystone';
 import { RootStore } from './RootStore';
 import { ProfileStore } from './apps/ProfileStore';
 import { reaction } from 'mobx';
@@ -30,5 +30,10 @@ export class AppStore extends Model({
         fireImmediately: true, // Trigger the reaction immediately with current value
       }
     );
+  }
+
+  @modelAction
+  getProfile() {
+    return getSnapshot(this.profile);
   }
 }

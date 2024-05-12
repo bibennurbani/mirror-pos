@@ -1,9 +1,12 @@
+import { Model, model, prop } from 'mobx-keystone';
 import * as yup from 'yup';
-
-
 
 //Profile type
 export type Profile = yup.InferType<typeof profileSchema>;
+@model('Profile')
+export class ProfileModel extends Model({
+  Profile: prop<Profile | undefined>(),
+}) {}
 
 // Using Infertype to make sure we dont type the props twice
 // so we can just update the schema and we will get the type
@@ -12,7 +15,7 @@ export type Profile = yup.InferType<typeof profileSchema>;
 //     username?: string;
 //     firstName?: string;
 //     lastName?: string;
-//     fullName?: string; 
+//     fullName?: string;
 //     avatarUrl?: string;
 //     website?: string;
 //     updatedAt?: Date;
