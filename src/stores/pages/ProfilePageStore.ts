@@ -1,4 +1,4 @@
-import { model, Model, prop, modelAction, getSnapshot } from 'mobx-keystone';
+import { model, Model, prop, modelAction } from 'mobx-keystone';
 import { Profile } from '../../types';
 import { RootStore } from '../RootStore';
 
